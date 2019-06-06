@@ -42,7 +42,6 @@ wss.on('connection', (ws) => {
     message = JSON.parse(message)
     message[0].id = uuidv1()
     if (message.length === 2) {
-
       message[1].id = uuidv1()
     }
 

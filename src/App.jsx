@@ -25,8 +25,15 @@ class App extends Component {
 
   onKeyDown = (e) => {
 
+    // let str = e.content;
+    // const regex = /\b(https?:\/\/\S+(?:png|jpe?g|gif)\S*)\b/igm;
+    // let m = regex.exec(str)
 
-
+    // if (m) {
+    //   console.log(m[0])
+    //   str = str.replace(m[0], "")
+    //   console.log(str)
+    // }
 
 
     let newMessage = [{ type: "message", username: e.username ? e.username : "Anonymous", content: e.content, color: this.state.currentUser.color }];
