@@ -2,62 +2,118 @@ import React, { Component } from 'react';
 import Chatbar from './chatBar.jsx';
 import Message from './Message.jsx';
 import { generateRandomId } from "./util.js";
+import { runInThisContext } from 'vm';
+//impthis.socketServer from ('ws').Server;
 //import Main from './components/Main.jsx';
+
+
 class App extends Component {
 
   constructor(props) {
     super(props)
 
     this.state = {
-
       currentUser: { name: "Bob" }, // optional. if currentUser is not defined, it means the user is Anonymous
-      messages: [
-        {
-          id: 1,
-          username: "Bob",
-          content: "Has anyone seen my marbles?",
-        },
-        {
-          id: 2,
-          username: "Anonymous",
-          content: "No, I think you lost them. You lost your marbles Bob. You lost them for good."
-        }
-      ]
+      messages: [{
+        type: "message",
+        id: 1,
+        username: "Bob",
+        content: "Has anyone seen my marbles?",
+      },
+      {
+        type: "message",
+        id: 2,
+        username: "Anonymous",
+        content: "No, I think you lost them. You lost your marbles Bob. You lost them for good."
+      }],
+      totalUsers: 0
     }
+
+    this.socket = new WebSocket("ws://localhost:3001");
+
   }
 
   onKeyDown = (e) => {
-    const uniqueId = generateRandomId(e.target.value.length)
-    const newMessage = { id: uniqueId, username: this.state.currentUser.name, content: e.target.value };
-    const messages = this.state.messages.concat(newMessage)
-    this.setState({ messages: messages })
+
+    let newMessage = [{ type: "message", username: e.username ? e.username : "Anonymous", content: e.content }];
+    if (e.username !== this.state.currentUser.name) {
+      newMessage.push({
+        type: "notification", username: e.username,
+        content: `${this.state.currentUser.name ? this.state.currentUser.name : "Anonymous"} changed his name to ${e.username}`
+      })
+      this.setState({ currentUser: { name: e.username } })
+    }
+    this.socket.send(JSON.stringify(newMessage));
   }
 
-  // componentDidMount() {
-  //   console.log("componentDidMount <App />");
-  //   setTimeout(() => {
-  //     console.log("Simulating incoming message");
-  //     // Add a new message to the list of messages in the data store
-  //     const newMessage = { id: 3, username: "Michelle", content: "Hello there!" };
-  //     const messages = this.state.messages.concat(newMessage)
-  //     // Update the state of the app component.
-  //     // Calling setState will trigger a call to render() in App and all child components.
-  //     this.setState({ messages: messages })
-  //   }, 3000);
-  // }
+
+  componentDidMount() {
+
+    this.socket.onopen = function (event) {
+      console.log("Socket open")
+    }
+
+    this.socket.onmessage = (message) => {
+      message = JSON.parse(message.data);
+      console.log(message)
+      if (message.type === "count") {
+        console.log(message);
+        this.setState({
+          totalUsers: message.count
+        })
+        return;
+      }
+
+
+      let messages = this.state.messages;
+      //console.log(messages)
+      if (message.length === 2) {
+        messages = messages.concat(message[1])
+      }
+
+
+      // if (messages.length > 0) {
+      messages = messages.concat(message[0])
+      // } else {
+      //   messages = message[0]
+      // }
+
+      //console.log(messages);
+      this.setState({ messages: messages })
+    }
+
+  }
 
   render() {
-    const { content, currentUser, messages } = this.state
+    const { content, currentUser, messages, totalUsers } = this.state
+    //console.log(messages)
 
     return (
       <div>
         <nav className="navbar">
           <a href="/" className="navbar-brand">Chatty</a>
+          <h5>{totalUsers}</h5>
         </nav>
         <Message messages={messages} />
-        <Chatbar onKeyDown={this.onKeyDown} currentUser={currentUser} messages={messages} content={content} />
+        <Chatbar onKeyDown={this.onKeyDown}
+          currentUser={currentUser}
+          messages={messages}
+          content={content} />
       </div>
     );
   }
+
 }
 export default App;
+
+
+ // console.log("componentDidMount <App />");
+    // setTimeout(() => {
+    //   console.log("Simulating incoming message");
+    //   // Add a new message to the list of messages in the data store
+    //   const newMessage = { id: 3, username: "Michelle", content: "Hello there!" };
+    //   const messages = this.state.messages.concat(newMessage)
+    //   // Update the state of the app component.
+    //   // Calling setState will trigger a call to render() in App and all child components.
+    //   this.setState({ messages: messages })
+    // }, 3000);

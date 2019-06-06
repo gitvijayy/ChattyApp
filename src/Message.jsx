@@ -7,7 +7,12 @@ class Message extends Component {
 
     const messages = this.props.messages.map(message => {
       return (
-        < MessageList key={message.id} message={message} />
+        message.type === "message" ?
+          < MessageList key={message.id} message={message} /> :
+          <div key={message.id} className="message system">
+            {message.content}
+          </div>
+
       )
     })
     return (
@@ -15,9 +20,7 @@ class Message extends Component {
       <main className="messages">
 
         {messages}
-        <div className="message system">
-          Anonymous1 changed their name to nomnom.
-     </div>
+
       </main>
     );
   }
