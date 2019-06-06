@@ -25,6 +25,10 @@ class App extends Component {
 
   onKeyDown = (e) => {
 
+
+
+
+
     let newMessage = [{ type: "message", username: e.username ? e.username : "Anonymous", content: e.content, color: this.state.currentUser.color }];
     if (e.username !== this.state.currentUser.name) {
       newMessage.push({
@@ -37,14 +41,33 @@ class App extends Component {
       //   console.log(getRandomColor())
       //   this.setState({ currentUser: { name: e.username, color: getRandomColor() } })
       // }
-      let color = getRandomColor()
-      console.log(color)
-      this.setState({
-        currentUser: {
-          name: e.username, color: this.state.currentUser.color ?
-            this.state.currentUser.color : color
-        }
-      })
+      // let color = getRandomColor()
+      // console.log(color)
+      // this.setState({
+      //   currentUser: {
+      //     name: e.username, color: this.state.currentUser.color ?
+      //       this.state.currentUser.color : color
+      //   }
+      // })
+
+      if (!this.state.currentUser.color) {
+        let color = getRandomColor()
+        console.log(color)
+
+
+        this.setState({
+          currentUser: {
+            name: e.username, color: color
+          }
+        })
+        newMessage[0].color = color
+      }
+
+
+
+
+
+
     }
 
     console.log(this.state.currentUser)
