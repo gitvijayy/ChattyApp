@@ -4,11 +4,11 @@ import React, { Component } from 'react';
 class MessageList extends Component {
 
   render() {
-
+    const style = { color: this.props.message.color }
     return (
 
       <div className="message">
-        <span className="message-username">{this.props.message.username}</span>
+        <span style={style} className="message-username">{this.props.message.username}</span>
         <span className="message-content">{this.props.message.content}</span>
       </div>
 

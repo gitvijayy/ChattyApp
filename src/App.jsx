@@ -3,6 +3,7 @@ import Chatbar from './chatBar.jsx';
 import Message from './Message.jsx';
 import { generateRandomId } from "./util.js";
 import { runInThisContext } from 'vm';
+import { getRandomColor } from "./randomColor.js";
 //impthis.socketServer from ('ws').Server;
 //import Main from './components/Main.jsx';
 
@@ -13,19 +14,8 @@ class App extends Component {
     super(props)
 
     this.state = {
-      currentUser: { name: "Bob" }, // optional. if currentUser is not defined, it means the user is Anonymous
-      messages: [{
-        type: "message",
-        id: 1,
-        username: "Bob",
-        content: "Has anyone seen my marbles?",
-      },
-      {
-        type: "message",
-        id: 2,
-        username: "Anonymous",
-        content: "No, I think you lost them. You lost your marbles Bob. You lost them for good."
-      }],
+      currentUser: { name: "", color: "" }, // optional. if currentUser is not defined, it means the user is Anonymous
+      messages: [],
       totalUsers: 0
     }
 
@@ -35,14 +25,29 @@ class App extends Component {
 
   onKeyDown = (e) => {
 
-    let newMessage = [{ type: "message", username: e.username ? e.username : "Anonymous", content: e.content }];
+    let newMessage = [{ type: "message", username: e.username ? e.username : "Anonymous", content: e.content, color: this.state.currentUser.color }];
     if (e.username !== this.state.currentUser.name) {
       newMessage.push({
         type: "notification", username: e.username,
         content: `${this.state.currentUser.name ? this.state.currentUser.name : "Anonymous"} changed his name to ${e.username}`
       })
-      this.setState({ currentUser: { name: e.username } })
+
+      // if (!this.state.currentUser.color) {
+      //   console.log("in")
+      //   console.log(getRandomColor())
+      //   this.setState({ currentUser: { name: e.username, color: getRandomColor() } })
+      // }
+      let color = getRandomColor()
+      console.log(color)
+      this.setState({
+        currentUser: {
+          name: e.username, color: this.state.currentUser.color ?
+            this.state.currentUser.color : color
+        }
+      })
     }
+
+    console.log(this.state.currentUser)
     this.socket.send(JSON.stringify(newMessage));
   }
 
@@ -94,7 +99,7 @@ class App extends Component {
           <a href="/" className="navbar-brand">Chatty</a>
           <h5>{totalUsers}</h5>
         </nav>
-        <Message messages={messages} />
+        <Message messages={messages} color={currentUser.color} />
         <Chatbar onKeyDown={this.onKeyDown}
           currentUser={currentUser}
           messages={messages}
