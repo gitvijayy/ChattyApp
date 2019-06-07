@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Chatbar from './chatBar.jsx';
 import Message from './Message.jsx';
-import { getRandomColor } from "./util.js";
+import { getRandomColor } from './util.js';
 import { runInThisContext } from 'vm';
 
 class App extends Component {
@@ -9,7 +9,7 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      currentUser: { name: "Anonymous", color: "" },
+      currentUser: { name: 'Anonymous', color: '' },
       messages: [],
       totalUsers: 0
     }
@@ -19,11 +19,11 @@ class App extends Component {
   onKeyDown = (data, type) => {
     let newMessage;
 
-    if (type === "notification") {
+    if (type === 'notification') {
       newMessage = {
         type: type,
         username: data,
-        content: `${this.state.currentUser.name} changed his name to ${data}`
+        content: `${this.state.currentUser.name} changed name to ${data}`
       }
       // to change username to the new name and update color if no color has been set for the user yet
       let currentUser = this.state.currentUser
@@ -48,15 +48,15 @@ class App extends Component {
 
   componentDidMount() {
 
-    this.socket = new WebSocket("ws://localhost:3001");
+    this.socket = new WebSocket('ws://localhost:3001');
 
     this.socket.onopen = function (event) {
-      console.log("Socket Open")
+      console.log('Socket Open')
     }
 
     this.socket.onmessage = (message) => {
       message = JSON.parse(message.data);
-      if (message.type === "count") {
+      if (message.type === 'count') {
         this.setState({
           totalUsers: message.count
         })
@@ -70,15 +70,15 @@ class App extends Component {
   render() {
 
     const { currentUser, messages, totalUsers } = this.state
-    const userOnline = totalUsers === 1 ? "Its Just you Bud 😐" : totalUsers + " - Bats Active"
+    const userOnline = totalUsers === 1 ? 'Its Just you Bud 😐' : totalUsers + ' - Bats Active'
 
     return (
       <div>
 
-        <nav className="navbar">
-          <img className="navbar-img" src="https://cdn.freebiesupply.com/logos/large/2x/batman-5-logo-png-transparent.png" />
-          <a href="/" className="navbar-brand">Batroom</a>
-          <h3 className="users">{userOnline}</h3>
+        <nav className='navbar'>
+          <img className='navbar-img' />
+          <a href='/' className='navbar-brand'>Batroom</a>
+          <h3 className='users'>{userOnline}</h3>
         </nav>
 
         <Message messages={messages} color={currentUser.color} />
