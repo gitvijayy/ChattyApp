@@ -14,7 +14,7 @@ Chatty is a real time chat client which allows user to communicate with each oth
 
 ## Final Product
 
-!["Chatroom"](https://github.com/gitvijayy/tweeter/blob/master/docs/compose.png?raw=true)
+!["Chatroom"](https://github.com/gitvijayy/ChattyApp/blob/master/docs/Screenshot%20from%202019-06-07%2003-33-56.png?raw=true)
 
 ## Stack
 
@@ -36,9 +36,9 @@ Chatty is a real time chat client which allows user to communicate with each oth
 ## devDependencies
 
 - babel
--css-loader
--eslint
--node-sass
--sockjs-client
--style-loader
--webpack
+- css-loader
+- eslint
+- node-sass
+- sockjs-client
+- style-loader
+- webpack
