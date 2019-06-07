@@ -13,7 +13,7 @@ class App extends Component {
       messages: [],
       totalUsers: 0
     }
-    this.socket = new WebSocket("ws://localhost:3001");
+
   }
 
   onKeyDown = (data, type) => {
@@ -37,7 +37,7 @@ class App extends Component {
     }
 
     newMessage = {
-      type: "message",
+      type: type,
       username: this.state.currentUser.name,
       content: data,
       color: this.state.currentUser.color
@@ -47,6 +47,8 @@ class App extends Component {
   }
 
   componentDidMount() {
+
+    this.socket = new WebSocket("ws://localhost:3001");
 
     this.socket.onopen = function (event) {
       console.log("Socket Open")
