@@ -1,12 +1,11 @@
-export const generateRandomId = (alphabet => {
-  const alphabetLength = alphabet.length;
-  const randoIter = (key, n) => {
-    if (n === 0) {
-      return key;
-    }
-    const randoIndex = Math.floor(Math.random() * alphabetLength);
-    const randoLetter = alphabet[randoIndex];
-    return randoIter(key + randoLetter, n - 1);
-  };
-  return () => randoIter("", 10);
-})("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+export const getRandomColor = () => {
+  var letters = '0123456789ABCDEF';
+  var color = '#';
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
+
+

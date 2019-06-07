@@ -4,7 +4,8 @@
   "description": "A lightweight Chat App",
   "scripts": {
     "lint": "eslint --ext .jsx,.js src",
-    "start": "node server.js"
+    "start": "node server.js",
+    "socket": "node chattyServer.js"
   },
   "repository": {
     "type": "git",
