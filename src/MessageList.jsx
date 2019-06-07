@@ -8,10 +8,10 @@ const MessageList = (props) => {
   const regex = /\b(https?:\/\/\S+(?:png|jpe?g|gif)\S*)\b/igm;
   let images;
   let messageString = props.message.content;
-  let m = messageString.match(regex)
+  let url = messageString.match(regex)
 
-  if (m) {
-    images = m.map(src => {
+  if (url) {
+    images = url.map(src => {
       messageString = messageString.replace(src, "")
       let imgStyle = { height: "100%", width: "60%" }
       return (
