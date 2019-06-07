@@ -6,35 +6,19 @@ import { runInThisContext } from 'vm';
 import { getRandomColor } from "./randomColor.js";
 //impthis.socketServer from ('ws').Server;
 //import Main from './components/Main.jsx';
-
-
 class App extends Component {
 
   constructor(props) {
     super(props)
-
     this.state = {
-      currentUser: { name: "", color: "" }, // optional. if currentUser is not defined, it means the user is Anonymous
+      currentUser: { name: "", color: "" },
       messages: [],
       totalUsers: 0
     }
-
     this.socket = new WebSocket("ws://localhost:3001");
-
   }
 
   onKeyDown = (e) => {
-
-    // let str = e.content;
-    // const regex = /\b(https?:\/\/\S+(?:png|jpe?g|gif)\S*)\b/igm;
-    // let m = regex.exec(str)
-
-    // if (m) {
-    //   console.log(m[0])
-    //   str = str.replace(m[0], "")
-    //   console.log(str)
-    // }
-
 
     let newMessage = [{ type: "message", username: e.username ? e.username : "Anonymous", content: e.content, color: this.state.currentUser.color }];
     if (e.username !== this.state.currentUser.name) {
@@ -43,25 +27,9 @@ class App extends Component {
         content: `${this.state.currentUser.name ? this.state.currentUser.name : "Anonymous"} changed his name to ${e.username}`
       })
 
-      // if (!this.state.currentUser.color) {
-      //   console.log("in")
-      //   console.log(getRandomColor())
-      //   this.setState({ currentUser: { name: e.username, color: getRandomColor() } })
-      // }
-      // let color = getRandomColor()
-      // console.log(color)
-      // this.setState({
-      //   currentUser: {
-      //     name: e.username, color: this.state.currentUser.color ?
-      //       this.state.currentUser.color : color
-      //   }
-      // })
-
       if (!this.state.currentUser.color) {
         let color = getRandomColor()
         console.log(color)
-
-
         this.setState({
           currentUser: {
             name: e.username, color: color
@@ -69,18 +37,9 @@ class App extends Component {
         })
         newMessage[0].color = color
       }
-
-
-
-
-
-
     }
-
-    console.log(this.state.currentUser)
     this.socket.send(JSON.stringify(newMessage));
   }
-
 
   componentDidMount() {
 
@@ -90,7 +49,8 @@ class App extends Component {
 
     this.socket.onmessage = (message) => {
       message = JSON.parse(message.data);
-      console.log(message)
+
+
       if (message.type === "count") {
         console.log(message);
         this.setState({
@@ -98,50 +58,41 @@ class App extends Component {
         })
         return;
       }
-
-
       let messages = this.state.messages;
-      //console.log(messages)
+
       if (message.length === 2) {
         messages = messages.concat(message[1])
       }
 
-
-      // if (messages.length > 0) {
       messages = messages.concat(message[0])
-      // } else {
-      //   messages = message[0]
-      // }
-
-      //console.log(messages);
       this.setState({ messages: messages })
     }
-
   }
 
   render() {
     const { content, currentUser, messages, totalUsers } = this.state
-    //console.log(messages)
+    const userOnline = totalUsers === 1 ? "Its Just you Bud" : totalUsers + " Users Online"
+
 
     return (
       <div>
+
         <nav className="navbar">
           <a href="/" className="navbar-brand">Chatty</a>
-          <h5>{totalUsers}</h5>
+          <h3 style={{ float: "right", fontWeight: "bold", paddingTop: "7px" }}>{userOnline}</h3>
         </nav>
+
         <Message messages={messages} color={currentUser.color} />
         <Chatbar onKeyDown={this.onKeyDown}
           currentUser={currentUser}
           messages={messages}
           content={content} />
+
       </div>
     );
   }
-
 }
 export default App;
-
-
  // console.log("componentDidMount <App />");
     // setTimeout(() => {
     //   console.log("Simulating incoming message");

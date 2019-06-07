@@ -7,31 +7,39 @@ class MessageList extends Component {
     const style = { color: this.props.message.color }
     let str = this.props.message.content;
     const regex = /\b(https?:\/\/\S+(?:png|jpe?g|gif)\S*)\b/igm;
-    let m = regex.exec(str)
-    let imgSrc;
-    let imgStyle;
+    //let m = regex.exec(str)
+    let m = str.match(regex)
+    //let imgSrc;
+    let images;
+    console.log(m)
     if (m) {
-      //console.log(m[0])
-      str = str.replace(m[0], "")
-      imgSrc = m[0];
-
-      imgStyle = { height: "100%", width: "60%" }
-      //console.log(str)
+      images = m.map(src => {
+        str = str.replace(src, "")
+        console.log("src", src)
+        //imgSrc = src;
+        let imgStyle = { height: "100%", width: "60%" }
+        return (
+          <div key={src}>
+            <br />
+            <img style={imgStyle} src={src} />
+            <br />
+          </div>
+        )
+      })
     }
-
-
-
-
 
     return (
 
       <div className="message">
         <span style={style} className="message-username">{this.props.message.username}</span>
         {/* /<span className="message-content">{this.props.message.content} */}
-        <span className="message-content">{str}
-          <br />
-          {imgSrc && <img style={imgStyle} src={imgSrc} />}
+        <span style={{ display: "flex", flexDirection: "column" }} className="message-content">{str}
+
+          {images}
+
         </span>
+
+
       </div>
 
     );
