@@ -1,16 +1,13 @@
 import React from 'react';
 
-const MessageList = (props) => {
-
-  //const{message} = props
-  const userColor = { background: props.message.color }
-
+export default function MessageList(props) {
+  const { message } = props
+  const userColor = { background: message.color }
   //to check if the given message has any image string
   const regex = /\b(https?:\/\/\S+(?:png|jpe?g|gif)\S*)\b/igm;
-  let images;
-  let messageString = props.message.content;
+  let images = null;
+  let messageString = message.content;
   let url = messageString.match(regex)
-
   if (url) {
     images = url.map(src => {
       messageString = messageString.replace(src, '')
@@ -25,12 +22,9 @@ const MessageList = (props) => {
 
   return (
     <div className='message'>
-      <span style={userColor} className='message-username'>{props.message.username}</span>
-      <span className='message-content'>{messageString}
-        {images}
-      </span>
+      <span style={userColor} className='message-username'>{message.username}</span>
+      <span className='message-content'>{messageString}{images}</span>
     </div>
   );
 }
 
-export default MessageList;

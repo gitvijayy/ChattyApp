@@ -2,60 +2,62 @@ import React, { Component } from 'react';
 import Chatbar from './chatBar.jsx';
 import Message from './Message.jsx';
 import { getRandomColor } from './util.js';
-import { runInThisContext } from 'vm';
-
+//import { runInThisContext } from 'vm';
 class App extends Component {
 
   constructor(props) {
     super(props)
     this.state = {
-      currentUser: { name: 'Anonymous', color: '' },
+      currentUser: { name: '', color: getRandomColor() },
       messages: [],
       totalUsers: 0
     }
+  }
+
+  onKeyDown = (e, type) => {
+
+    const { name, color } = this.state.currentUser
+    let userName = name ? name : 'Anonymous'
+
+    let newMessage = {
+      type: type, username: userName, color: color
+    };
+
+    if (type === 'notification') {
+      newMessage.content = `${userName} changed name to ${e.target.value}`
+      this.setState({ currentUser: { name: e.target.value, color: color } })
+    }
+
+    if (type === 'message') {
+      newMessage.content = e.target.value
+      e.target.value = ''
+    }
+
+    this.socket.send(JSON.stringify(newMessage));
 
   }
 
-  onKeyDown = (data, type) => {
-    let newMessage;
+  scrollToBottom = () => {
+    this.messagesEnd.scrollIntoView({ behavior: "smooth" });
+  }
 
-    if (type === 'notification') {
-      newMessage = {
-        type: type,
-        username: data,
-        content: `${this.state.currentUser.name} changed name to ${data}`
-      }
-      // to change username to the new name and update color if no color has been set for the user yet
-      let currentUser = this.state.currentUser
-      currentUser.name = data
-      currentUser.color = !currentUser.color ? getRandomColor() : currentUser.color
-      this.setState({
-        currentUser: currentUser
-      })
-      this.socket.send(JSON.stringify(newMessage));
-      return;
-    }
-
-    newMessage = {
-      type: type,
-      username: this.state.currentUser.name,
-      content: data,
-      color: this.state.currentUser.color
-    };
-
-    this.socket.send(JSON.stringify(newMessage));
+  componentDidUpdate() {
+    this.scrollToBottom();
   }
 
   componentDidMount() {
 
-    this.socket = new WebSocket('ws://localhost:3001');
+    this.scrollToBottom();
 
+    this.socket = new WebSocket('ws://localhost:3001');
     this.socket.onopen = function (event) {
       console.log('Socket Open')
     }
 
     this.socket.onmessage = (message) => {
+
       message = JSON.parse(message.data);
+
       if (message.type === 'count') {
         this.setState({
           totalUsers: message.count
@@ -73,7 +75,7 @@ class App extends Component {
     const userOnline = totalUsers === 1 ? 'Its Just you Bud 😐' : totalUsers + ' - Bats Active'
 
     return (
-      <div>
+      <div >
 
         <nav className='navbar'>
           <img className='navbar-img' />
@@ -81,12 +83,13 @@ class App extends Component {
           <h3 className='users'>{userOnline}</h3>
         </nav>
 
-        <Message messages={messages} color={currentUser.color} />
+        <Message messages={messages} />
+        {/* empty div to scroll to bottom */}
+        <div ref={(el) => { this.messagesEnd = el; }}> </div>
         <Chatbar onKeyDown={this.onKeyDown} currentUser={currentUser} />
 
       </div>
     );
   }
-
 }
 export default App;

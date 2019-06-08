@@ -54,8 +54,13 @@ body {
   flex: 2;
 }
 
+.auto-scroll {
+  max-height: 100%;
+}
 .messages {
   margin-top: 8%;
+
+  bottom: 0;
 }
 
 .message {
