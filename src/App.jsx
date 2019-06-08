@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Chatbar from './chatBar.jsx';
 import Message from './Message.jsx';
 import { getRandomColor } from './util.js';
-//import { runInThisContext } from 'vm';
+
 class App extends Component {
 
   constructor(props) {
