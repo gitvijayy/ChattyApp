@@ -10,7 +10,7 @@ export default function Chatbar(props) {
       <input
         className='chatbar-username'
         name='username'
-        onBlur={(e) => { (e.target.value != currentUser.name) ? onKeyDown(e, 'notification') : null }}
+        onBlur={(e) => { (e.target.value != currentUser) ? onKeyDown(e, 'notification') : null }}
         placeholder='Your Name (Optional)'
       />
 

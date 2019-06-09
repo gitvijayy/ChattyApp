@@ -1,31 +1,35 @@
-import React, { Component } from 'react';
+import React, { Component, useState, useEffect, useMemo, useRef } from 'react';
 import Chatbar from './chatBar.jsx';
 import Message from './Message.jsx';
 import { getRandomColor } from './util.js';
 
-class App extends Component {
 
-  constructor(props) {
-    super(props)
-    this.state = {
-      currentUser: { name: '', color: getRandomColor() },
-      messages: [],
-      totalUsers: 0
-    }
+const socket = new WebSocket('ws://localhost:3001');
+
+export default function App() {
+
+  const [userName, setUser] = useState('')
+  const [color, setColor] = useState(getRandomColor())
+  const [messages, setMessages] = useState([])
+  const [totalUsers, setCount] = useState(0)
+
+  useEffect(() => {
+    document.getElementById("scrollToBottom").scrollIntoView({ behavior: "smooth" });
+  })
+
+  socket.onmessage = (message) => {
+    message = JSON.parse(message.data);
+    message.type === 'count' ? setCount(message.count) : setMessages([...messages, message])
   }
 
-  onKeyDown = (e, type) => {
+  const onKeyDown = (e, type) => {
 
-    const { name, color } = this.state.currentUser
-    let userName = name ? name : 'Anonymous'
-
-    let newMessage = {
-      type: type, username: userName, color: color
-    };
+    let user = userName ? userName : 'Anonymous'
+    let newMessage = { type: type, username: user, color: color };
 
     if (type === 'notification') {
-      newMessage.content = `${userName} changed name to ${e.target.value}`
-      this.setState({ currentUser: { name: e.target.value, color: color } })
+      newMessage.content = `${user} changed name to ${e.target.value}`
+      setUser(e.target.value)
     }
 
     if (type === 'message') {
@@ -33,63 +37,27 @@ class App extends Component {
       e.target.value = ''
     }
 
-    this.socket.send(JSON.stringify(newMessage));
+    socket.send(JSON.stringify(newMessage));
 
   }
 
-  scrollToBottom = () => {
-    this.messagesEnd.scrollIntoView({ behavior: "smooth" });
-  }
+  const userOnline = totalUsers === 1 ? 'Its Just you Bud 😐' : totalUsers + ' - Bats Active'
 
-  componentDidUpdate() {
-    this.scrollToBottom();
-  }
+  return (
+    <div >
+      <nav className='navbar'>
+        <img className='navbar-img' />
+        <a href='/' className='navbar-brand'>Batroom</a>
+        <h3 className='users'>{userOnline}</h3>
+      </nav>
 
-  componentDidMount() {
+      <Message messages={messages} />
+      {/* empty div to scroll to bottom */}
+      {/* ref={(el) => { messagesEnd = el; }} */}
+      <div id="scrollToBottom"> </div>
+      <Chatbar onKeyDown={onKeyDown} currentUser={userName} />
 
-    this.scrollToBottom();
-
-    this.socket = new WebSocket('ws://localhost:3001');
-    this.socket.onopen = function (event) {
-      console.log('Socket Open')
-    }
-
-    this.socket.onmessage = (message) => {
-
-      message = JSON.parse(message.data);
-
-      if (message.type === 'count') {
-        this.setState({
-          totalUsers: message.count
-        })
-        return;
-      }
-
-      this.setState({ messages: [...this.state.messages, message] })
-    }
-  }
-
-  render() {
-
-    const { currentUser, messages, totalUsers } = this.state
-    const userOnline = totalUsers === 1 ? 'Its Just you Bud 😐' : totalUsers + ' - Bats Active'
-
-    return (
-      <div >
-
-        <nav className='navbar'>
-          <img className='navbar-img' />
-          <a href='/' className='navbar-brand'>Batroom</a>
-          <h3 className='users'>{userOnline}</h3>
-        </nav>
-
-        <Message messages={messages} />
-        {/* empty div to scroll to bottom */}
-        <div ref={(el) => { this.messagesEnd = el; }}> </div>
-        <Chatbar onKeyDown={this.onKeyDown} currentUser={currentUser} />
-
-      </div>
-    );
-  }
+    </div >
+  );
 }
-export default App;
+
